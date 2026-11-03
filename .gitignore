@@ -1,0 +1,26 @@
+# Config con datos sensibles (cada uno crea el suyo)
+config/config.php
+
+# Estado del deploy (lo genera GitHub Actions)
+.ftp-deploy-sync-state.json
+
+# Dependencias
+/vendor/
+/node_modules/
+
+# Entorno
+.env
+
+# Logs y temporales
+*.log
+*.cache
+/tmp/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Editores / IDEs
+.vscode/
+.idea/
+*.swp
