@@ -11,14 +11,29 @@ function send_mail(string $to, string $subject, string $body): bool {
         return file_put_contents(dirname(__DIR__) . '/mail_outbox.log', $entry, FILE_APPEND | LOCK_EX) !== false;
     }
 
-    try {
-        smtp_send($to, $subject, $body);
-        return true;
-    } catch (Throwable $e) {
-        // The log has the SMTP answer, never the password.
-        error_log('MovieMatch mail error: ' . $e->getMessage());
-        return false;
+    // Temporary SMTP errors (4xx, for example iCloud "454 auth service unavailable") are retried.
+    $maxAttempts = 3;
+    for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
+        try {
+            smtp_send($to, $subject, $body);
+            return true;
+        } catch (SmtpTemporaryError $e) {
+            error_log("MovieMatch mail temporary error (attempt $attempt of $maxAttempts): " . $e->getMessage());
+            if ($attempt < $maxAttempts) {
+                sleep(3);
+            }
+        } catch (Throwable $e) {
+            // The log has the SMTP answer, never the password.
+            error_log('MovieMatch mail error: ' . $e->getMessage());
+            return false;
+        }
     }
+    return false;
+}
+
+// The SMTP server said "try again later" (a 4xx answer).
+class SmtpTemporaryError extends RuntimeException
+{
 }
 
 // Reads one SMTP answer (it can have many lines) and checks the code. Returns the answer text.
@@ -33,6 +48,9 @@ function smtp_expect($socket, array $okCodes): string {
     } while (isset($line[3]) && $line[3] === '-'); // "250-..." means more lines are coming
 
     $code = (int) substr($text, 0, 3);
+    if ($code >= 400 && $code < 500) {
+        throw new SmtpTemporaryError('Temporary SMTP answer: ' . trim($text));
+    }
     if (!in_array($code, $okCodes, true)) {
         throw new RuntimeException('Unexpected SMTP answer: ' . trim($text));
     }
@@ -74,7 +92,7 @@ function smtp_send(string $to, string $subject, string $body): void {
         }
         smtp_command($socket, 'EHLO ' . $clientName, [250]); // ask again after TLS
 
-        // AUTH PLAIN: user and password in one step. (iCloud answered 454 to AUTH LOGIN but accepts PLAIN.)
+        // AUTH PLAIN: user and password in one step.
         smtp_command($socket, 'AUTH PLAIN ' . base64_encode("\0" . MAIL_USER . "\0" . MAIL_PASS), [235]);
 
         smtp_command($socket, 'MAIL FROM:<' . MAIL_FROM . '>', [250]);
