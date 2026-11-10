@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 /*
 Sends a plain text email.
-APP_ENV = 'local': the email is NOT sent. It is saved in mail_outbox.log (project root)
+- APP_ENV = 'local': the email is NOT sent. It is saved in mail_outbox.log (project root),
 */
 function send_mail(string $to, string $subject, string $body): bool {
     if (APP_ENV === 'local') {
@@ -74,9 +74,8 @@ function smtp_send(string $to, string $subject, string $body): void {
         }
         smtp_command($socket, 'EHLO ' . $clientName, [250]); // ask again after TLS
 
-        smtp_command($socket, 'AUTH LOGIN', [334]);
-        smtp_command($socket, base64_encode(MAIL_USER), [334]);
-        smtp_command($socket, base64_encode(MAIL_PASS), [235]);
+        // AUTH PLAIN: user and password in one step. (iCloud answered 454 to AUTH LOGIN but accepts PLAIN.)
+        smtp_command($socket, 'AUTH PLAIN ' . base64_encode("\0" . MAIL_USER . "\0" . MAIL_PASS), [235]);
 
         smtp_command($socket, 'MAIL FROM:<' . MAIL_FROM . '>', [250]);
         smtp_command($socket, 'RCPT TO:<' . $to . '>', [250, 251]);
