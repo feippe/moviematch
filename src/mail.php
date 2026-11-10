@@ -1,9 +1,9 @@
 <?php
-declare(strict_types=1);
 
 /*
 Sends a plain text email.
 - APP_ENV = 'local': the email is NOT sent. It is saved in mail_outbox.log (project root),
+- Any other value: it is sent with the Resend email service (HTTPS API) using RESEND_API_KEY and MAIL_FROM from config.php.
 */
 function send_mail(string $to, string $subject, string $body): bool {
     if (APP_ENV === 'local') {
@@ -11,117 +11,73 @@ function send_mail(string $to, string $subject, string $body): bool {
         return file_put_contents(dirname(__DIR__) . '/mail_outbox.log', $entry, FILE_APPEND | LOCK_EX) !== false;
     }
 
-    // Temporary SMTP errors (4xx, for example iCloud "454 auth service unavailable") are retried.
+    // Temporary problems (network error, 429 or 5xx) are retried. Other errors are not.
     $maxAttempts = 3;
     for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
-        try {
-            smtp_send($to, $subject, $body);
+        $result = resend_send($to, $subject, $body);
+        if ($result['ok']) {
             return true;
-        } catch (SmtpTemporaryError $e) {
-            error_log("MovieMatch mail temporary error (attempt $attempt of $maxAttempts): " . $e->getMessage());
-            if ($attempt < $maxAttempts) {
-                sleep(3);
-            }
-        } catch (Throwable $e) {
-            // The log has the SMTP answer, never the password.
-            error_log('MovieMatch mail error: ' . $e->getMessage());
+        }
+        // The log has the answer from Resend, never the API key.
+        error_log("MovieMatch mail error (attempt $attempt of $maxAttempts): " . $result['error']);
+        if (!$result['retry']) {
             return false;
+        }
+        if ($attempt < $maxAttempts) {
+            sleep(2);
         }
     }
     return false;
 }
 
-// The SMTP server said "try again later" (a 4xx answer).
-class SmtpTemporaryError extends RuntimeException
-{
-}
-
-// Reads one SMTP answer (it can have many lines) and checks the code. Returns the answer text.
-function smtp_expect($socket, array $okCodes): string {
-    $text = '';
-    do {
-        $line = fgets($socket, 1024);
-        if ($line === false) {
-            throw new RuntimeException('SMTP connection closed or timed out.');
-        }
-        $text .= $line;
-    } while (isset($line[3]) && $line[3] === '-'); // "250-..." means more lines are coming
-
-    $code = (int) substr($text, 0, 3);
-    if ($code >= 400 && $code < 500) {
-        throw new SmtpTemporaryError('Temporary SMTP answer: ' . trim($text));
+/*
+Sends one email with the Resend API: POST https://api.resend.com/emails
+Returns ['ok' => bool, 'retry' => bool, 'error' => string].
+*/
+function resend_send(string $to, string $subject, string $body): array {
+    if (!function_exists('curl_init')) {
+        return ['ok' => false, 'retry' => false, 'error' => 'The PHP curl extension is not enabled.'];
     }
-    if (!in_array($code, $okCodes, true)) {
-        throw new RuntimeException('Unexpected SMTP answer: ' . trim($text));
+
+    // Never allow line breaks inside header values
+    $to = str_replace(["\r", "\n"], '', $to);
+    $subject = str_replace(["\r", "\n"], '', $subject);
+
+    $payload = json_encode([
+        'from'    => 'MovieMatch <' . MAIL_FROM . '>',
+        'to'      => [$to],
+        'subject' => $subject,
+        'text'    => $body,
+    ]);
+
+    $ch = curl_init('https://api.resend.com/emails');
+    curl_setopt_array($ch, [
+        CURLOPT_POST           => true,
+        CURLOPT_POSTFIELDS     => $payload,
+        CURLOPT_HTTPHEADER     => [
+            'Authorization: Bearer ' . RESEND_API_KEY,
+            'Content-Type: application/json',
+        ],
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CONNECTTIMEOUT => 10,
+        CURLOPT_TIMEOUT        => 20,
+    ]);
+    $answer = curl_exec($ch);
+    $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
+    curl_close($ch);
+
+    if ($answer === false) {
+        return ['ok' => false, 'retry' => true, 'error' => 'Could not reach Resend: ' . $curlError];
     }
-    return $text;
-}
-
-// Sends one command and checks the answer.
-function smtp_command($socket, string $command, array $okCodes): string {
-    fwrite($socket, $command . "\r\n");
-    return smtp_expect($socket, $okCodes);
-}
-
-// Talks to the SMTP server: connect, STARTTLS, login, send. Throws an exception on any error.
-function smtp_send(string $to, string $subject, string $body): void {
-    $context = stream_context_create(['ssl' => [
-        'verify_peer'      => true,
-        'verify_peer_name' => true,
-        'peer_name'        => MAIL_HOST,
-    ]]);
-
-    $socket = @stream_socket_client(
-        'tcp://' . MAIL_HOST . ':' . MAIL_PORT, $errno, $errstr, 15, STREAM_CLIENT_CONNECT, $context
-    );
-    if (!$socket) {
-        throw new RuntimeException("Could not connect to the SMTP server: $errstr ($errno)");
+    if ($status >= 200 && $status < 300) {
+        return ['ok' => true, 'retry' => false, 'error' => ''];
     }
-    stream_set_timeout($socket, 15);
-
-    try {
-        $clientName = parse_url(APP_URL, PHP_URL_HOST) ?: 'localhost';
-
-        smtp_expect($socket, [220]);
-        smtp_command($socket, 'EHLO ' . $clientName, [250]);
-
-        smtp_command($socket, 'STARTTLS', [220]);
-        // "@" hides the PHP warning, so it cannot get mixed with the JSON answer. The error is logged below.
-        if (!@stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
-            throw new RuntimeException('Could not start the secure connection (STARTTLS).');
-        }
-        smtp_command($socket, 'EHLO ' . $clientName, [250]); // ask again after TLS
-
-        // AUTH PLAIN: user and password in one step.
-        smtp_command($socket, 'AUTH PLAIN ' . base64_encode("\0" . MAIL_USER . "\0" . MAIL_PASS), [235]);
-
-        smtp_command($socket, 'MAIL FROM:<' . MAIL_FROM . '>', [250]);
-        smtp_command($socket, 'RCPT TO:<' . $to . '>', [250, 251]);
-        smtp_command($socket, 'DATA', [354]);
-
-        // Never allow line breaks inside header values
-        $to = str_replace(["\r", "\n"], '', $to);
-        $subject = str_replace(["\r", "\n"], '', $subject);
-        $fromDomain = substr(MAIL_FROM, strrpos(MAIL_FROM, '@') + 1);
-
-        $message = 'From: MovieMatch <' . MAIL_FROM . ">\r\n"
-                 . 'To: <' . $to . ">\r\n"
-                 . 'Subject: =?UTF-8?B?' . base64_encode($subject) . "?=\r\n"
-                 . 'Date: ' . date('r') . "\r\n"
-                 . 'Message-ID: <' . bin2hex(random_bytes(12)) . '@' . $fromDomain . ">\r\n"
-                 . "MIME-Version: 1.0\r\n"
-                 . "Content-Type: text/plain; charset=UTF-8\r\n"
-                 . "Content-Transfer-Encoding: base64\r\n"
-                 . "\r\n"
-                 . chunk_split(base64_encode($body), 76, "\r\n");
-
-        fwrite($socket, $message . ".\r\n"); // a line with only a dot ends the message
-        smtp_expect($socket, [250]);
-
-        smtp_command($socket, 'QUIT', [221]);
-    } finally {
-        fclose($socket);
-    }
+    return [
+        'ok'    => false,
+        'retry' => ($status === 429 || $status >= 500),
+        'error' => "Resend answered HTTP $status: " . trim((string) $answer),
+    ];
 }
 
 function app_link(string $path): string {
