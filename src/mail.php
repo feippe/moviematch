@@ -136,7 +136,7 @@ function send_verification_email(string $email, string $token): bool {
 }
 
 function send_password_reset_email(string $email, string $token): bool {
-    $link = app_link('reset-password.html?token=' . urlencode($token));
+    $link = app_link('reset-password.php?token=' . urlencode($token));
     $body = "We received a request to change your MovieMatch password.\n\n"
           . "Open this link to choose a new password (it is valid for 1 hour):\n\n"
           . "$link\n\n"

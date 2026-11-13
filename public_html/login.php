@@ -47,7 +47,8 @@
                         id="password"
                         name="password"
                         placeholder="Enter your password"
-                        minlength="5"
+                        minlength="8"
+                        maxlength="72"
                         autocomplete="current-password"
                         required
                     >

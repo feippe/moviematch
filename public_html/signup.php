@@ -43,7 +43,8 @@
                     id="password"
                     name="password"
                     placeholder="Create a password"
-                    minlength="5"
+                    minlength="8"
+                    maxlength="72"
                     autocomplete="new-password"
                     required
                 >
@@ -56,7 +57,8 @@
                     id="confirmPassword"
                     name="confirmPassword"
                     placeholder="Confirm your password"
-                    minlength="5"
+                    minlength="8"
+                    maxlength="72"
                     autocomplete="new-password"
                     required
                 >

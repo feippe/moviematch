@@ -28,11 +28,11 @@ newPasswordForm.addEventListener("submit", async function(event) {
     }
 
     // Check password length
-    if (password.length < 5) {
-        errorMessage.textContent =
-            "Password must contain at least 5 characters.";
-        return;
-    }
+    if (password.length < 8 || password.length > 72) {
+    errorMessage.textContent =
+        "Password must contain between 8 and 72 characters.";
+    return;
+}
 
     // Check that passwords match
     if (password !== confirmPassword) {

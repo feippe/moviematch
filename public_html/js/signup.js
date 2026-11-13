@@ -16,8 +16,9 @@ signupForm.addEventListener("submit", async function(event) {
         return;
     }
 
-    if (password.length < 5) {
-        errorMessage.textContent = "Password must contain at least 5 characters.";
+    if (password.length < 8 || password.length > 72) {
+        errorMessage.textContent =
+            "Password must contain between 8 and 72 characters.";
         return;
     }
 
