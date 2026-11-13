@@ -1,21 +1,24 @@
 <?php
 
-// Base de datos
+// URL base
+define('APP_URL', 'http://localhost:8080');
+
+// DB
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'moviematch');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 define('DB_CHARSET', 'utf8mb4');
 
-// Correo (SMTP)
+// Mail
 define('MAIL_HOST', '');
 define('MAIL_PORT', 587);
 define('MAIL_USER', '');
 define('MAIL_PASS', '');
 define('MAIL_FROM', 'no-reply@moviematch.feippe.com');
 
-// API de TMDB
+// TMDB API
 define('TMDB_API_KEY', '');
 
-// Entorno: 'local' o 'production'
+// Environment: 'local' or 'production'
 define('APP_ENV', 'local');
