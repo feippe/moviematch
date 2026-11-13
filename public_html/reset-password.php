@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Reset Password | MovieMatch</title>
+
+    <link rel="stylesheet" href="css/reset-password.css">
+    <script src="js/reset-password.js" defer></script>
+</head>
+
+<body>
+
+    <main class="reset-container">
+
+        <div class="reset-card">
+
+            <h1>MovieMatch</h1>
+
+            <h2>Choose a New Password</h2>
+
+            <p class="subtitle">
+                Create a new password for your MovieMatch account.
+            </p>
+
+            <form id="newPasswordForm">
+
+                <div class="form-group">
+                    <label for="password">New Password</label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Enter your new password"
+                        minlength="5"
+                        autocomplete="new-password"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm New Password</label>
+
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        placeholder="Confirm your new password"
+                        minlength="5"
+                        autocomplete="new-password"
+                        required
+                    >
+                </div>
+
+                <p id="errorMessage" class="error-message" role="alert"></p>
+
+                <button type="submit">Reset Password</button>
+
+            </form>
+
+            <p class="login-link">
+                Remember your password?
+                <a href="login.php">Back to Login</a>
+            </p>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

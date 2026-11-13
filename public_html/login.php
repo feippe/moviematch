@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login | MovieMatch</title>
+
+    <link rel="stylesheet" href="css/login.css">
+    <script src="js/login.js" defer></script>
+</head>
+
+<body>
+
+    <main class="login-container">
+
+        <div class="login-card">
+
+            <h1>MovieMatch</h1>
+
+            <h2>Welcome Back!</h2>
+
+            <p class="subtitle">
+                Log in to find your movie match.
+            </p>
+
+            <form id="loginForm">
+
+                <div class="form-group">
+                    <label for="email">University Email</label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Enter your university email"
+                        autocomplete="email"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        minlength="5"
+                        autocomplete="current-password"
+                        required
+                    >
+                </div>
+
+                <p id="errorMessage" class="error-message" role="alert"></p>
+
+                <button type="submit">Login</button>
+
+            </form>
+
+            <p class="forgot-password">
+                <a href="forgot-password.php">Forgot Password?</a>
+            </p>
+
+            <p class="signup-link">
+                Don't have an account?
+                <a href="signup.php">Sign Up</a>
+            </p>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

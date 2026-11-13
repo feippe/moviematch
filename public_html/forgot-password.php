@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Forgot Password | MovieMatch</title>
+
+    <link rel="stylesheet" href="css/forgot-password.css">
+    <script src="js/forgot-password.js" defer></script>
+</head>
+
+<body>
+
+    <main class="reset-container">
+
+        <div class="reset-card">
+
+            <h1>MovieMatch</h1>
+
+            <h2>Forgot Password?</h2>
+
+            <p class="subtitle">
+                Don't worry! Enter your university email address
+                and we'll help you reset your password.
+            </p>
+
+            <form id="resetForm">
+
+                <div class="form-group">
+                    <label for="email">University Email</label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Enter your university email"
+                        autocomplete="email"
+                        required
+                    >
+                </div>
+
+                <p id="errorMessage" class="error-message" role="alert"></p>
+
+                <button type="submit">Send Reset Link</button>
+
+            </form>
+
+            <p class="login-link">
+                Remember your password?
+                <a href="login.php">Back to Login</a>
+            </p>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

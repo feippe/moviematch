@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sign Up | MovieMatch</title>
+
+    <link rel="stylesheet" href="css/signup.css">
+    <script src="js/signup.js" defer></script>
+</head>
+
+<body>
+
+    <main class="signup-container">
+
+        <div class="logo">MovieMatch</div>
+
+        <h2>Create Your Account</h2>
+
+        <p class="subtitle">
+            Find people who share your movie taste.
+        </p>
+
+        <form id="signupForm">
+
+            <div class="form-group">
+                <label for="email">University Email</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Enter your university email"
+                    autocomplete="email"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Create a password"
+                    minlength="5"
+                    autocomplete="new-password"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input
+                    type="password"
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    placeholder="Confirm your password"
+                    minlength="5"
+                    autocomplete="new-password"
+                    required
+                >
+            </div>
+
+            <p id="errorMessage" class="error-message" role="alert"></p>
+
+            <button type="submit">Create Account</button>
+
+        </form>
+
+        <p class="login-link">
+            Already have an account?
+            <a href="login.php">Log In</a>
+        </p>
+
+    </main>
+
+</body>
+</html>
