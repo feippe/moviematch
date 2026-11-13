@@ -28,10 +28,6 @@ resetForm.addEventListener("submit", async function(event) {
 
         const data = await response.json();
 
-        if (!response.ok) {
-            throw new Error("Server returned an error: " + response.status);
-        }
-
         // Handle successful response
         if (data.success) {
             errorMessage.style.color = "#4ade80";
