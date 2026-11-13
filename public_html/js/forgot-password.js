@@ -1,5 +1,6 @@
 const resetForm = document.getElementById("resetForm");
 const errorMessage = document.getElementById("errorMessage");
+const submitButton = resetForm.querySelector("button[type='submit']");
 
 resetForm.addEventListener("submit", async function(event) {
     event.preventDefault();
@@ -14,6 +15,10 @@ resetForm.addEventListener("submit", async function(event) {
         errorMessage.textContent = "Please enter your university email.";
         return;
     }
+
+    const originalText = submitButton.textContent;
+    submitButton.disabled = true;
+    submitButton.textContent = "Sending...";
 
     try {
         const response = await fetch("/api/password-reset-request.php", {
@@ -44,5 +49,8 @@ resetForm.addEventListener("submit", async function(event) {
             "Unable to connect to the server. Please try again.";
 
         console.error("Password reset request error:", error);
+    } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = originalText;
     }
 });

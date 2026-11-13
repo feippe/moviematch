@@ -1,5 +1,6 @@
 const loginForm = document.getElementById("loginForm");
 const errorMessage = document.getElementById("errorMessage");
+const submitButton = loginForm.querySelector("button[type='submit']");
 
 // Display email verification messages
 const urlParams = new URLSearchParams(window.location.search);
@@ -33,9 +34,13 @@ loginForm.addEventListener("submit", async function(event) {
     // Check password length
     if (password.length < 5 || password.length > 72) {
         errorMessage.textContent =
-            "Password must contain at least 5 and 72 characters.";
+            "Password must contain between 5 and 72 characters.";
         return;
     }
+
+    const originalText = submitButton.textContent;
+    submitButton.disabled = true;
+    submitButton.textContent = "Logging in...";
 
     try {
         const response = await fetch("/api/login.php", {
@@ -65,5 +70,8 @@ loginForm.addEventListener("submit", async function(event) {
             "Unable to connect to the server. Please try again.";
 
         console.error("Login error:", error);
+    } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = originalText;
     }
 });

@@ -1,5 +1,6 @@
 const signupForm = document.getElementById("signupForm");
 const errorMessage = document.getElementById("errorMessage");
+const submitButton = signupForm.querySelector("button[type='submit']");
 
 signupForm.addEventListener("submit", async function(event) {
     event.preventDefault();
@@ -26,6 +27,10 @@ signupForm.addEventListener("submit", async function(event) {
         errorMessage.textContent = "Passwords do not match.";
         return;
     }
+
+    const originalText = submitButton.textContent;
+    submitButton.disabled = true;
+    submitButton.textContent = "Creating account...";
 
     try {
         const response = await fetch("/api/register.php", {
@@ -54,5 +59,9 @@ signupForm.addEventListener("submit", async function(event) {
         errorMessage.textContent =
             "Unable to connect to the server. Please try again.";
         console.error("Sign-up error:", error);
+    } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = originalText;
     }
+
 });
