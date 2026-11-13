@@ -1,6 +1,6 @@
 <?php
 
-const MIN_PASSWORD_LENGTH = 8;
+const MIN_PASSWORD_LENGTH = 5;
 const MAX_PASSWORD_LENGTH = 72;      // bcrypt only uses the first 72 bytes
 const VERIFICATION_LIFETIME = 86400; // 24 hours
 const RESET_LIFETIME = 3600;         // 1 hour

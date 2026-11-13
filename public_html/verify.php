@@ -3,8 +3,8 @@
 /*
 Link from the verification email: /verify.php?token=...
 It confirms the account and sends the user to the login page: 
-   /login.php?verified=1  (confirmed)
-   /login.php?verified=0  (invalid or expired link)
+   /login.html?verified=1  (confirmed)
+   /login.html?verified=0  (invalid or expired link)
 */
 
 require __DIR__ . '/../src/init.php';
@@ -18,5 +18,5 @@ try {
     $verified = false;
 }
 
-header('Location: /login.php?verified=' . ($verified ? '1' : '0'));
+header('Location: /login.html?verified=' . ($verified ? '1' : '0'));
 exit;

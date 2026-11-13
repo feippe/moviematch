@@ -28,9 +28,9 @@ newPasswordForm.addEventListener("submit", async function(event) {
     }
 
     // Check password length
-    if (password.length < 8 || password.length > 72) {
+    if (password.length < 5 || password.length > 72) {
     errorMessage.textContent =
-        "Password must contain between 8 and 72 characters.";
+        "Password must contain between 5 and 72 characters.";
     return;
 }
 
