@@ -12,3 +12,8 @@ University-only PWA to find someone to go to the movies with, based on shared mo
 > "Commit to the LORDwhatever you do , and he will establish your plans"
 
 -Proverbs 16:3
+
+## Juvenson's Favorite Quote
+> “For I know the plans I have for you,” declares the Lord, “plans to prosper you and not to harm you, plans to give you hope and a future.” 
+
+-Jeremiah 29:11
