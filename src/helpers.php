@@ -23,11 +23,12 @@ function json_response(int $status, array $body) {
 }
 
 /*
-Starts an API call: only POST is accepted, the body must be JSON,
-and any unexpected error becomes a generic JSON error (details go to the error log).
+Starts an API call: only one method is accepted (POST unless we say GET),
+the body must be JSON, and any unexpected error becomes a generic JSON error
+(details go to the error log).
 Returns the decoded JSON body as an array.
 */
-function api_start(bool $requireBody = true): array {
+function api_start(bool $requireBody = true, string $method = 'POST'): array {
     header('Content-Type: application/json; charset=utf-8');
     header('Cache-Control: no-store');
 
@@ -36,7 +37,7 @@ function api_start(bool $requireBody = true): array {
         json_response(500, ['success' => false, 'error' => 'Server error. Please try again later.']);
     });
 
-    if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
+    if (($_SERVER['REQUEST_METHOD'] ?? '') !== $method) {
         json_response(405, ['success' => false, 'error' => 'Method not allowed.']);
     }
 

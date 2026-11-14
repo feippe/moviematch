@@ -10,3 +10,4 @@ require $configFile;
 require __DIR__ . '/helpers.php';
 require __DIR__ . '/mail.php';
 require __DIR__ . '/auth.php';
+require __DIR__ . '/profile.php';

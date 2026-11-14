@@ -1,0 +1,167 @@
+<?php
+
+// the rules for the profile
+const MIN_AGE = 18;
+const MAX_AGE = 100;
+const MAX_NAME_LENGTH = 60;
+
+// gets the age in years from a birth date like 2000-05-20
+function get_age(string $birthDate): int {
+    $birth = new DateTime($birthDate);
+    $today = new DateTime('today');
+    $difference = $birth->diff($today);
+    return $difference->y;
+}
+
+// checks that the date looks like 2000-05-20 and is a real day on the calendar
+function is_valid_date(string $date): bool {
+    if (strlen($date) !== 10) {
+        return false;
+    }
+
+    $parts = explode('-', $date);
+    if (count($parts) !== 3) {
+        return false;
+    }
+
+    $year = (int) $parts[0];
+    $month = (int) $parts[1];
+    $day = (int) $parts[2];
+    return checkdate($month, $day, $year);
+}
+
+// gets the logged in user from the database. returns null if nobody is logged in.
+function current_user() {
+    start_session();
+
+    // the session only has a user_id if the user logged in
+    if (!isset($_SESSION['user_id'])) {
+        return null;
+    }
+
+    $stmt = db()->prepare(
+        'SELECT u.id, u.email, u.role, u.blocked_at, c.domain AS community,
+                p.name, p.birth_date, p.sex, p.photo_path, p.match_mode, p.match_with
+         FROM users u
+         JOIN communities c ON c.id = u.community_id
+         LEFT JOIN profiles p ON p.user_id = u.id
+         WHERE u.id = ?'
+    );
+    $stmt->execute([$_SESSION['user_id']]);
+    $user = $stmt->fetch();
+
+    // fetch gives false when the user was not found
+    if (!$user) {
+        return null;
+    }
+    return $user;
+}
+
+// put this at the top of every api file that needs a logged in user
+function require_login(): array {
+    $user = current_user();
+
+    if ($user === null) {
+        json_response(401, ['success' => false, 'error' => 'Please log in.']);
+    }
+
+    // blocked users get kicked out
+    if ($user['blocked_at'] !== null) {
+        $_SESSION = [];
+        session_destroy();
+        json_response(403, ['success' => false, 'error' => 'This account is blocked.']);
+    }
+
+    return $user;
+}
+
+// same as require_login, but only admins can pass (we will use it for the admin panel)
+function require_admin(): array {
+    $user = require_login();
+
+    if ($user['role'] !== 'admin') {
+        json_response(403, ['success' => false, 'error' => 'Not allowed.']);
+    }
+
+    return $user;
+}
+
+// builds the data we send to the browser for the logged in user
+function user_data(array $row): array {
+    $profile = null;
+    $profileComplete = false;
+
+    // if there is a name, the user already filled the profile
+    if ($row['name'] !== null) {
+        $profileComplete = true;
+        $profile = [
+            'name'       => $row['name'],
+            'birth_date' => $row['birth_date'],
+            'age'        => get_age($row['birth_date']),
+            'sex'        => $row['sex'],
+            'photo_path' => $row['photo_path'],
+            'match_mode' => $row['match_mode'],
+            'match_with' => $row['match_with'],
+        ];
+    }
+
+    return [
+        'id'               => (int) $row['id'],
+        'email'            => $row['email'],
+        'role'             => $row['role'],
+        'community'        => $row['community'],
+        'profile_complete' => $profileComplete,
+        'profile'          => $profile,
+    ];
+}
+
+// saves the profile. creates it the first time, updates it after that.
+function save_profile(int $userId, string $name, string $birthDate, string $sex, string $matchWith): array {
+    // check the name
+    if ($name === '' || mb_strlen($name) > MAX_NAME_LENGTH) {
+        return auth_fail(400, 'Please enter your name (up to ' . MAX_NAME_LENGTH . ' characters).');
+    }
+
+    // check the birth date
+    if (!is_valid_date($birthDate)) {
+        return auth_fail(400, 'Please enter a valid date of birth.');
+    }
+    $age = get_age($birthDate);
+    if ($age < MIN_AGE) {
+        return auth_fail(400, 'You must be at least ' . MIN_AGE . ' years old to use MovieMatch.');
+    }
+    if ($age > MAX_AGE) {
+        return auth_fail(400, 'Please enter a valid date of birth.');
+    }
+
+    // check sex and who the user wants to match with
+    if ($sex !== 'female' && $sex !== 'male') {
+        return auth_fail(400, 'Please choose your sex.');
+    }
+    if ($matchWith !== 'female' && $matchWith !== 'male' && $matchWith !== 'any') {
+        return auth_fail(400, 'Please choose who you want to match with.');
+    }
+
+    $pdo = db();
+    $now = utc_now();
+
+    // look if this user already has a profile
+    $stmt = $pdo->prepare('SELECT user_id FROM profiles WHERE user_id = ?');
+    $stmt->execute([$userId]);
+
+    if ($stmt->fetch()) {
+        // profile exists, so we update it
+        $stmt = $pdo->prepare(
+            'UPDATE profiles SET name = ?, birth_date = ?, sex = ?, match_with = ?, updated_at = ? WHERE user_id = ?'
+        );
+        $stmt->execute([$name, $birthDate, $sex, $matchWith, $now, $userId]);
+    } else {
+        // no profile yet, so we create it
+        $stmt = $pdo->prepare(
+            'INSERT INTO profiles (user_id, name, birth_date, sex, match_with, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
+        );
+        $stmt->execute([$userId, $name, $birthDate, $sex, $matchWith, $now, $now]);
+    }
+
+    return auth_ok(['message' => 'Profile saved.']);
+}
