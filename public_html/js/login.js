@@ -16,6 +16,18 @@ if (verified === "1") {
         "Email verification failed or the link has expired. Please try again.";
 }
 
+// after login, we send the user to the profile page or to the app
+async function goToNextPage() {
+    const response = await fetch("/api/me.php");
+    const data = await response.json();
+
+    if (data.success && data.user.profile_complete) {
+        window.location.href = "/app.html";
+    } else {
+        window.location.href = "/profile.html";
+    }
+}
+
 loginForm.addEventListener("submit", async function(event) {
     event.preventDefault();
 
@@ -57,9 +69,7 @@ loginForm.addEventListener("submit", async function(event) {
         const data = await response.json();
 
         if (data.success) {
-            errorMessage.style.color = "#4ade80";
-            errorMessage.textContent =
-                "Welcome! You are logged in as " + data.user.email;
+            await goToNextPage();
         } else {
             errorMessage.textContent =
                 data.error || "Login failed. Please try again.";
