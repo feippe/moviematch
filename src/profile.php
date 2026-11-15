@@ -4,6 +4,7 @@
 const MIN_AGE = 18;
 const MAX_AGE = 100;
 const MAX_NAME_LENGTH = 60;
+const MAX_PHOTO_SIZE = 5242880; // 5 mb
 
 // gets the age in years from a birth date like 2000-05-20
 function get_age(string $birthDate): int {
@@ -93,7 +94,6 @@ function user_data(array $row): array {
 
     // if there is a name, the user already filled the profile
     if ($row['name'] !== null) {
-        $profileComplete = true;
         $profile = [
             'name'       => $row['name'],
             'birth_date' => $row['birth_date'],
@@ -103,6 +103,11 @@ function user_data(array $row): array {
             'match_mode' => $row['match_mode'],
             'match_with' => $row['match_with'],
         ];
+
+        // the profile is only complete when the user also has a photo
+        if ($row['photo_path'] !== null) {
+            $profileComplete = true;
+        }
     }
 
     return [
@@ -164,4 +169,79 @@ function save_profile(int $userId, string $name, string $birthDate, string $sex,
     }
 
     return auth_ok(['message' => 'Profile saved.']);
+}
+
+// saves the photo of the user. the profile must exist before.
+// $file is the item from $_FILES, for example $_FILES['photo']
+function save_photo(int $userId, array $file): array {
+    // php gives an error code with every file. UPLOAD_ERR_OK means all is fine.
+    if ($file['error'] === UPLOAD_ERR_NO_FILE) {
+        return auth_fail(400, 'Please choose a photo.');
+    }
+    if ($file['error'] === UPLOAD_ERR_INI_SIZE || $file['error'] === UPLOAD_ERR_FORM_SIZE) {
+        return auth_fail(400, 'The photo is too big. The maximum is 5 MB.');
+    }
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        return auth_fail(400, 'The upload failed. Please try again.');
+    }
+
+    // check the size and that the file really came from an upload
+    if ($file['size'] > MAX_PHOTO_SIZE) {
+        return auth_fail(400, 'The photo is too big. The maximum is 5 MB.');
+    }
+    if (!is_uploaded_file($file['tmp_name'])) {
+        return auth_fail(400, 'The upload failed. Please try again.');
+    }
+
+    // look inside the file to see what it really is (we do not trust the file name)
+    $info = getimagesize($file['tmp_name']);
+    if ($info === false) {
+        return auth_fail(400, 'The file is not an image.');
+    }
+
+    // we choose the file extension ourselves, from the real type
+    $extension = '';
+    if ($info['mime'] === 'image/jpeg') {
+        $extension = 'jpg';
+    } elseif ($info['mime'] === 'image/png') {
+        $extension = 'png';
+    } elseif ($info['mime'] === 'image/webp') {
+        $extension = 'webp';
+    }
+    if ($extension === '') {
+        return auth_fail(400, 'Please use a JPG, PNG or WEBP photo.');
+    }
+
+    // the user needs a profile first. we also get the old photo here.
+    $pdo = db();
+    $stmt = $pdo->prepare('SELECT photo_path FROM profiles WHERE user_id = ?');
+    $stmt->execute([$userId]);
+    $profile = $stmt->fetch();
+    if (!$profile) {
+        return auth_fail(400, 'Please save your profile first.');
+    }
+
+    // random file name, so nobody can guess it
+    $folder = dirname(__DIR__) . '/public_html/uploads/photos/';
+    $fileName = bin2hex(random_bytes(16)) . '.' . $extension;
+
+    if (!move_uploaded_file($file['tmp_name'], $folder . $fileName)) {
+        error_log('MovieMatch: could not save the photo in ' . $folder);
+        return auth_fail(500, 'We could not save the photo. Please try again later.');
+    }
+
+    // save the photo path in the database
+    $photoPath = '/uploads/photos/' . $fileName;
+    $stmt = $pdo->prepare('UPDATE profiles SET photo_path = ?, updated_at = ? WHERE user_id = ?');
+    $stmt->execute([$photoPath, utc_now(), $userId]);
+
+    // delete the old photo, if there was one
+    if ($profile['photo_path'] !== null) {
+        $oldFile = $folder . basename($profile['photo_path']);
+        if (is_file($oldFile)) {
+            unlink($oldFile);
+        }
+    }
+
+    return auth_ok(['photo_path' => $photoPath]);
 }

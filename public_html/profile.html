@@ -72,6 +72,19 @@
                     </select>
                 </div>
 
+                <div class="form-group">
+                    <label for="photo">Photo</label>
+
+                    <img id="photoPreview" class="photo-preview" alt="Your photo" hidden>
+
+                    <input
+                        type="file"
+                        id="photo"
+                        name="photo"
+                        accept="image/jpeg,image/png,image/webp"
+                    >
+                </div>
+
                 <p id="errorMessage" class="error-message" role="alert"></p>
 
                 <button type="submit">Save Profile</button>
