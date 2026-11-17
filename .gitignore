@@ -24,3 +24,8 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
+
+# Uploaded photos (not versioned)
+public_html/uploads/photos/*
+!public_html/uploads/photos/.gitkeep
+!public_html/uploads/photos/.htaccess
