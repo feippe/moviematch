@@ -3,7 +3,7 @@ const matches = [
     {
         id: 1,
         name: "Gabriel",
-        photo: "",
+        photo: "https://i.pravatar.cc/150?img=12",
         age: 24,
         sex: "Male",
         sharedMovies: ["Merlin", "Avatar"]
@@ -11,7 +11,7 @@ const matches = [
     {
         id: 2,
         name: "Abiodun",
-        photo: "",
+        photo: "https://i.pravatar.cc/150?img=47",
         age: 22,
         sex: "Female",
         sharedMovies: ["Titanic", "Legend of the seeker"]
@@ -25,24 +25,51 @@ const message = document.getElementById("message");
 function displayMatches() {
     matchesList.innerHTML = "";
 
-    matches.forEach(match => {
+    matches.forEach(function(match) {
         const card = document.createElement("div");
         card.className = "match-card";
 
-        card.innerHTML = `
-            <h3>${match.name}</h3>
-            <p>Age: ${match.age}</p>
-            <p>Sex: ${match.sex}</p>
-            <p>Shared movies: ${match.sharedMovies.join(", ")}</p>
+        const photo = document.createElement("img");
+        photo.src = match.photo;
+        photo.alt = match.name + "'s profile photo";
+        photo.width = 120;
+        photo.height = 120;
+        photo.style.borderRadius = "50%";
+        photo.style.objectFit = "cover";
 
-            <button type="button" onclick="acceptMatch(${match.id})">
-                Accept
-            </button>
+        const name = document.createElement("h3");
+        name.textContent = match.name;
 
-            <button type="button" onclick="declineMatch(${match.id})">
-                Decline
-            </button>
-        `;
+        const age = document.createElement("p");
+        age.textContent = "Age: " + match.age;
+
+        const sex = document.createElement("p");
+        sex.textContent = "Sex: " + match.sex;
+
+        const movies = document.createElement("p");
+        movies.textContent = "Shared movies: " + match.sharedMovies.join(", ");
+
+        const acceptButton = document.createElement("button");
+        acceptButton.type = "button";
+        acceptButton.textContent = "Accept";
+        acceptButton.addEventListener("click", function() {
+            acceptMatch(match.id);
+        });
+
+        const declineButton = document.createElement("button");
+        declineButton.type = "button";
+        declineButton.textContent = "Decline";
+        declineButton.addEventListener("click", function() {
+            declineMatch(match.id);
+        });
+
+        card.appendChild(photo);
+        card.appendChild(name);
+        card.appendChild(age);
+        card.appendChild(sex);
+        card.appendChild(movies);
+        card.appendChild(acceptButton);
+        card.appendChild(declineButton);
 
         matchesList.appendChild(card);
     });
@@ -50,12 +77,20 @@ function displayMatches() {
 
 // Accept a match
 function acceptMatch(id) {
-    message.textContent = "You accepted this match!";
+    const match = matches.find(function(item) {
+        return item.id === id;
+    });
+
+    message.textContent = "You accepted " + match.name + "'s match!";
 }
 
 // Decline a match
 function declineMatch(id) {
-    message.textContent = "You declined this match.";
+    const match = matches.find(function(item) {
+        return item.id === id;
+    });
+
+    message.textContent = "You declined " + match.name + "'s match.";
 }
 
 // Display matches when the page loads
