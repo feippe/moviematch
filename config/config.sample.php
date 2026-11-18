@@ -18,7 +18,7 @@ define('MAIL_PASS', '');
 define('MAIL_FROM', 'no-reply@moviematch.feippe.com');
 
 // TMDB API
-define('TMDB_API_KEY', '7eff609bf03c28ee1115acbfe93f4763');
+define('TMDB_API_KEY', '');
 
 // Environment: 'local' or 'production'
 define('APP_ENV', 'local');
