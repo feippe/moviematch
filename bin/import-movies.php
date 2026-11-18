@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 $configFile = __DIR__ . '/../config/config.php';
 
 if (!is_file($configFile)) {
