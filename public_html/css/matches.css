@@ -1,0 +1,37 @@
+/* Styles only for matches.html. Colors come from the variables in app.css. */
+
+.match-card {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    column-gap: 16px;
+    align-items: center;
+    background-color: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.match-card img {
+    grid-row: 1 / 5;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.match-card h3 {
+    font-size: 20px;
+    margin-bottom: 4px;
+}
+
+.match-card p {
+    color: var(--muted);
+    font-size: 15px;
+    margin-bottom: 4px;
+}
+
+.match-card button {
+    grid-column: 1 / -1;
+    margin-top: 10px;
+}
