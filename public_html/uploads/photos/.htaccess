@@ -1,0 +1,8 @@
+# Nobody can open anything in this folder, except images
+Require all denied
+<FilesMatch "\.(jpe?g|png|webp)$">
+    Require all granted
+</FilesMatch>
+
+# Do not show the list of files
+Options -Indexes
