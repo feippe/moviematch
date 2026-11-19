@@ -1,145 +1,75 @@
 .swipe-container {
-    width: min(100% - 32px, 540px);
-    margin: 32px auto;
-}
-
-.swipe-heading {
-    margin: 0 0 8px;
-    text-align: center;
-    font-size: clamp(1.7rem, 5vw, 2.25rem);
-}
-
-.swipe-subheading {
-    margin: 0 0 24px;
-    color: var(--muted, #a7a7a7);
-    text-align: center;
+    width: 100%;
+    max-width: 550px;
+    margin: auto;
 }
 
 .movie-card {
-    overflow: hidden;
-    border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
-    border-radius: 18px;
-    background: var(--card, #171717);
-    box-shadow: 0 16px 42px rgba(0, 0, 0, 0.24);
-    transition: opacity 160ms ease;
-}
-
-.movie-card.is-loading {
-    opacity: 0.65;
-}
-
-.movie-poster-wrap {
-    display: grid;
-    min-height: 220px;
-    max-height: 620px;
-    place-items: center;
-    background: #101010;
+    background: var(--card);
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, .3);
 }
 
 .movie-poster {
-    display: block;
     width: 100%;
-    max-height: 620px;
+    max-height: 420px;
     object-fit: contain;
-}
-
-.movie-poster[hidden] {
-    display: none;
-}
-
-.movie-details {
-    padding: 22px;
+    border-radius: 10px;
+    background: #0b1020;
+    margin-bottom: 20px;
 }
 
 .movie-title {
-    margin: 0 0 8px;
-    font-size: clamp(1.35rem, 4vw, 1.8rem);
-    line-height: 1.25;
+    text-align: left;
+    margin-bottom: 10px;
 }
 
-.movie-release-date {
-    display: block;
-    margin-bottom: 14px;
-    color: var(--muted, #a7a7a7);
-    font-size: 0.9rem;
+.movie-date {
+    color: var(--muted);
+    margin-bottom: 15px;
 }
 
 .movie-overview {
-    margin: 0;
-    color: var(--text-muted, #d0d0d0);
-    line-height: 1.65;
-}
-
-.swipe-status {
-    min-height: 24px;
-    margin: 18px 0 14px;
-    color: var(--muted, #a7a7a7);
-    text-align: center;
-}
-
-.swipe-status.is-error {
-    color: #ff8585;
+    line-height: 1.6;
+    color: var(--muted);
 }
 
 .swipe-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
 }
 
-.swipe-button {
-    min-height: 52px;
-    border: 0;
-    border-radius: 12px;
-    color: #fff;
-    font: inherit;
-    font-size: 1rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform 140ms ease, opacity 140ms ease, filter 140ms ease;
+.swipe-actions button {
+    flex: 1;
 }
 
-.swipe-button:hover:not(:disabled) {
-    filter: brightness(1.08);
-    transform: translateY(-2px);
+.pass-button {
+    background: #475569;
 }
 
-.swipe-button:focus-visible {
-    outline: 3px solid #fff;
-    outline-offset: 3px;
+.pass-button:hover {
+    background: #334155;
 }
 
-.swipe-button:disabled {
-    cursor: not-allowed;
-    opacity: 0.45;
+.status-message {
+    text-align: center;
+    margin: 20px 0;
+    color: var(--muted);
+    line-height: 1.5;
 }
 
-.swipe-button-no {
-    background: #b64048;
+.navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
 }
 
-.swipe-button-yes {
-    background: #23865b;
+.navigation a {
+    font-size: 14px;
 }
 
-@media (max-width: 480px) {
-    .swipe-container {
-        margin: 20px auto;
-    }
-
-    .movie-details {
-        padding: 18px;
-    }
-
-    .movie-poster-wrap {
-        min-height: 180px;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-
-    .movie-card,
-    .swipe-button {
-        transition: none;
-    }
+[hidden] {
+    display: none !important;
 }
