@@ -1,41 +1,46 @@
-// Temporary sample matches for testing
-const matches = [
-    {
-        id: 1,
-        name: "Gabriel",
-        photo: "https://i.pravatar.cc/150?img=12",
-        age: 24,
-        sex: "Male",
-        sharedMovies: ["Merlin", "Avatar"]
-    },
-    {
-        id: 2,
-        name: "Abiodun",
-        photo: "https://i.pravatar.cc/150?img=47",
-        age: 22,
-        sex: "Female",
-        sharedMovies: ["Titanic", "Legend of the seeker"]
-    }
-];
-
+```javascript
 const matchesList = document.getElementById("matchesList");
 const message = document.getElementById("message");
 
+// Fetch matches from the API
+async function loadMatches() {
+    matchesList.innerHTML = "<p>Loading your matches...</p>";
+    message.textContent = "";
+
+    try {
+        const response = await fetch("/api/matches.php");
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.error || "Unable to load matches.");
+        }
+
+        displayMatches(data.matches);
+
+    } catch (error) {
+        matchesList.innerHTML = "<p>Unable to load your matches.</p>";
+        message.textContent = error.message;
+    }
+}
+
 // Display matches
-function displayMatches() {
+function displayMatches(matches) {
     matchesList.innerHTML = "";
+
+    if (!matches || matches.length === 0) {
+        matchesList.innerHTML = "<p>You don't have any matches yet.</p>";
+        return;
+    }
 
     matches.forEach(function(match) {
         const card = document.createElement("div");
         card.className = "match-card";
 
         const photo = document.createElement("img");
-        photo.src = match.photo;
+        photo.src = match.photo_path;
         photo.alt = match.name + "'s profile photo";
-        photo.width = 120;
-        photo.height = 120;
-        photo.style.borderRadius = "50%";
-        photo.style.objectFit = "cover";
+        photo.width = 90;
+        photo.height = 90;
 
         const name = document.createElement("h3");
         name.textContent = match.name;
@@ -47,20 +52,23 @@ function displayMatches() {
         sex.textContent = "Sex: " + match.sex;
 
         const movies = document.createElement("p");
-        movies.textContent = "Shared movies: " + match.sharedMovies.join(", ");
+        movies.textContent = "Shared movies: " +
+            (match.shared_movies || []).join(", ");
 
         const acceptButton = document.createElement("button");
         acceptButton.type = "button";
         acceptButton.textContent = "Accept";
         acceptButton.addEventListener("click", function() {
-            acceptMatch(match.id);
+            message.textContent =
+                "Accept functionality is not connected yet.";
         });
 
         const declineButton = document.createElement("button");
         declineButton.type = "button";
         declineButton.textContent = "Decline";
         declineButton.addEventListener("click", function() {
-            declineMatch(match.id);
+            message.textContent =
+                "Decline functionality is not connected yet.";
         });
 
         card.appendChild(photo);
@@ -75,23 +83,6 @@ function displayMatches() {
     });
 }
 
-// Accept a match
-function acceptMatch(id) {
-    const match = matches.find(function(item) {
-        return item.id === id;
-    });
-
-    message.textContent = "You accepted " + match.name + "'s match!";
-}
-
-// Decline a match
-function declineMatch(id) {
-    const match = matches.find(function(item) {
-        return item.id === id;
-    });
-
-    message.textContent = "You declined " + match.name + "'s match.";
-}
-
-// Display matches when the page loads
-displayMatches();
+// Load matches when the page opens
+loadMatches();
+```
