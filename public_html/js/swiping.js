@@ -1,168 +1,152 @@
 
-(() => {
-    'use strict';
+const movieCard = document.getElementById("movieCard");
+const moviePoster = document.getElementById("moviePoster");
+const movieTitle = document.getElementById("movieTitle");
+const movieDate = document.getElementById("movieDate");
+const movieOverview = document.getElementById("movieOverview");
+const statusMessage = document.getElementById("statusMessage");
 
-    const card = document.getElementById('movieCard');
-    const poster = document.getElementById('moviePoster');
-    const title = document.getElementById('movieTitle');
-    const overview = document.getElementById('movieOverview');
-    const releaseDate = document.getElementById('movieReleaseDate');
-    const yesButton = document.getElementById('swipeYes');
-    const noButton = document.getElementById('swipeNo');
-    const status = document.getElementById('swipeStatus');
+const likeButton = document.getElementById("likeButton");
+const passButton = document.getElementById("passButton");
+const logoutLink = document.getElementById("logoutLink");
 
-    if (!card || !poster || !title || !overview || !yesButton || !noButton || !status) {
-        return;
-    }
+let currentMovie = null;
 
-    let activeMovie = null;
-    let busy = false;
+async function loadMovie() {
+    movieCard.hidden = true;
+    statusMessage.textContent = "Loading next movie...";
 
-    function showStatus(message, isError = false) {
-        status.textContent = message;
-        status.classList.toggle('is-error', isError);
-    }
+    try {
+        const response = await fetch("/api/movies-next.php");
+        const data = await response.json();
 
-    function setButtonsDisabled(disabled) {
-        yesButton.disabled = disabled;
-        noButton.disabled = disabled;
-    }
-
-    async function loadNextMovie() {
-        if (busy) return;
-
-        busy = true;
-        activeMovie = null;
-        setButtonsDisabled(true);
-        card.classList.add('is-loading');
-        showStatus('Loading your next movie...');
-
-        try {
-            const response = await fetch('api/movies-next.php', {
-                method: 'GET',
-                credentials: 'same-origin',
-                headers: {
-                    Accept: 'application/json'
-                }
-            });
-
-            const result = await response.json();
-
-            if (response.status === 401 || response.status === 403) {
-                window.location.href = 'login.html';
-                return;
-            }
-
-            if (!response.ok || !result.success || !result.movie) {
-                throw new Error(result.error || 'Unable to load a movie.');
-            }
-
-            activeMovie = result.movie;
-
-            title.textContent = activeMovie.title;
-            overview.textContent = activeMovie.overview || 'No description is available.';
-
-            poster.hidden = !activeMovie.poster_url;
-            poster.alt = activeMovie.poster_url
-                ? `${activeMovie.title} poster`
-                : '';
-
-            if (activeMovie.poster_url) {
-                poster.src = activeMovie.poster_url;
-            } else {
-                poster.removeAttribute('src');
-            }
-
-            if (releaseDate) {
-                releaseDate.textContent = activeMovie.release_date
-                    ? new Date(`${activeMovie.release_date}T00:00:00`)
-                        .toLocaleDateString(undefined, {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                        })
-                    : '';
-            }
-
-            showStatus('Would you watch this movie?');
-            setButtonsDisabled(false);
-
-        } catch (error) {
-            title.textContent = 'Unable to load a movie';
-            overview.textContent = error.message;
-
-            poster.removeAttribute('src');
-            poster.hidden = true;
-
-            if (releaseDate) {
-                releaseDate.textContent = '';
-            }
-
-            showStatus(error.message, true);
-
-        } finally {
-            busy = false;
-            card.classList.remove('is-loading');
-
-            if (!activeMovie) {
-                setButtonsDisabled(true);
-            }
+        if (response.status === 401 || response.status === 403) {
+            window.location.href = "/login.html";
+            return;
         }
-    }
 
-    async function submitSwipe(decision) {
-        if (!activeMovie || busy) return;
-
-        busy = true;
-        setButtonsDisabled(true);
-        showStatus('Saving your choice...');
-
-        try {
-            const response = await fetch('api/swipe.php', {
-                method: 'POST',
-                credentials: 'same-origin',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json'
-                },
-                body: JSON.stringify({
-                    movie_id: activeMovie.id,
-                    decision: decision
-                })
-            });
-
-            const result = await response.json();
-
-            if (response.status === 401 || response.status === 403) {
-                window.location.href = 'login.html';
-                return;
-            }
-
-            if (!response.ok || !result.success) {
-                throw new Error(
-                    result.error || 'Your swipe could not be saved.'
-                );
-            }
-
-            activeMovie = null;
-            busy = false;
-
-            await loadNextMovie();
-
-        } catch (error) {
-            showStatus(error.message, true);
-            setButtonsDisabled(false);
-            busy = false;
+        if (response.status === 404) {
+            currentMovie = null;
+            statusMessage.textContent =
+                data.error || "No more movies available. Please check back later.";
+            return;
         }
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.error || "Unable to load movie.");
+        }
+
+        currentMovie = data.movie;
+
+        movieTitle.textContent = currentMovie.title;
+        movieOverview.textContent =
+            currentMovie.overview || "No description available.";
+
+        movieDate.textContent =
+            currentMovie.release_date
+                ? "Release date: " + currentMovie.release_date
+                : "Release date unavailable";
+
+        if (currentMovie.poster_url) {
+            moviePoster.src = currentMovie.poster_url;
+            moviePoster.hidden = false;
+        } else {
+            moviePoster.removeAttribute("src");
+            moviePoster.hidden = true;
+        }
+
+        movieCard.hidden = false;
+        statusMessage.textContent = "";
+
+    } catch (error) {
+        console.error("Movie loading error:", error);
+        statusMessage.textContent = error.message;
+    }
+}
+
+async function submitSwipe(decision) {
+    if (!currentMovie) return;
+
+    likeButton.disabled = true;
+    passButton.disabled = true;
+
+    try {
+        const response = await fetch("/api/swipe.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                movie_id: currentMovie.id,
+                decision: decision
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.status === 401 || response.status === 403) {
+            window.location.href = "/login.html";
+            return;
+        }
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.error || "Unable to save your swipe.");
+        }
+
+        currentMovie = null;
+        await loadMovie();
+
+    } catch (error) {
+        console.error("Swipe error:", error);
+        statusMessage.textContent = error.message;
+
+    } finally {
+        likeButton.disabled = false;
+        passButton.disabled = false;
+    }
+}
+
+likeButton.addEventListener("click", () => submitSwipe("yes"));
+passButton.addEventListener("click", () => submitSwipe("no"));
+
+logoutLink.addEventListener("click", async (event) => {
+    event.preventDefault();
+
+    try {
+        await fetch("/api/logout.php", { method: "POST" });
+    } catch (error) {
+        console.error("Logout error:", error);
     }
 
-    yesButton.addEventListener('click', () => {
-        submitSwipe('yes');
-    });
+    window.location.href = "/login.html";
+});
 
-    noButton.addEventListener('click', () => {
-        submitSwipe('no');
-    });
+async function checkUser() {
+    try {
+        const response = await fetch("/api/me.php");
 
-    loadNextMovie();
-})();
+        if (response.status === 401 || response.status === 403) {
+            window.location.href = "/login.html";
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error("Unable to verify your account.");
+        }
+
+        const data = await response.json();
+
+        if (!data.user.profile_complete) {
+            window.location.href = "/profile.html";
+            return;
+        }
+
+        await loadMovie();
+
+    } catch (error) {
+        console.error("Account check error:", error);
+        statusMessage.textContent = error.message;
+    }
+}
+
+checkUser();

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discover Movies - MovieMatch</title>
+    <link rel="stylesheet" href="css/app.css">
+
+    <style>
+        .swipe-container {
+            width: 100%;
+            max-width: 550px;
+            margin: auto;
+        }
+
+        .movie-card {
+            background: var(--card);
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, .3);
+        }
+
+        .movie-poster {
+            width: 100%;
+            max-height: 420px;
+            object-fit: contain;
+            border-radius: 10px;
+            background: #0b1020;
+            margin-bottom: 20px;
+        }
+
+        .movie-title {
+            text-align: left;
+            margin-bottom: 10px;
+        }
+
+        .movie-date {
+            color: var(--muted);
+            margin-bottom: 15px;
+        }
+
+        .movie-overview {
+            line-height: 1.6;
+            color: var(--muted);
+        }
+
+        .swipe-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .swipe-actions button {
+            flex: 1;
+        }
+
+        .pass-button {
+            background: #475569;
+        }
+
+        .pass-button:hover {
+            background: #334155;
+        }
+
+        .status-message {
+            text-align: center;
+            margin: 20px 0;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .navigation a {
+            font-size: 14px;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+    </style>
+
+    <script src="js/swiping.js" defer></script>
+</head>
+
+<body>
+
+    <main class="swipe-container">
+
+        <div class="navigation">
+            <a href="app.html">← Dashboard</a>
+            <a href="profile.html">Edit profile</a>
+        </div>
+
+        <h1>MovieMatch</h1>
+        <h2>Discover Movies</h2>
+
+        <p class="subtitle">Find movies you and your future match might both love.</p>
+
+        <section class="movie-card" id="movieCard" hidden>
+
+            <img id="moviePoster" class="movie-poster" alt="Movie poster">
+
+            <h2 id="movieTitle" class="movie-title"></h2>
+
+            <p id="movieDate" class="movie-date"></p>
+
+            <p id="movieOverview" class="movie-overview"></p>
+
+            <div class="swipe-actions">
+                <button type="button" id="passButton" class="pass-button">
+                    Pass ✕
+                </button>
+
+                <button type="button" id="likeButton">
+                    Like ♥
+                </button>
+            </div>
+
+        </section>
+
+        <p id="statusMessage" class="status-message">
+            Loading movies...
+        </p>
+
+        <p class="auth-link">
+            <a href="#" id="logoutLink">Log out</a>
+        </p>
+
+    </main>
+
+</body>
+
+</html>
