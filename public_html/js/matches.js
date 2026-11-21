@@ -1,4 +1,3 @@
-```javascript
 const matchesList = document.getElementById("matchesList");
 const message = document.getElementById("message");
 
@@ -85,4 +84,3 @@ function displayMatches(matches) {
 
 // Load matches when the page opens
 loadMatches();
-```
