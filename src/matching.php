@@ -4,10 +4,10 @@ Finds every pair of users that match and saves the new ones in the matches table
 Two users match when they are in the same community, accept each other's sex
 preference, and said YES to at least min_shared_movies of the same movies.
 If $userId is given, only the pairs that include that user are checked (faster).
-Returns how many new matches were created.
+Returns how many rows changed (a new match counts 1, an updated one counts 2).
 */
 function update_matches(?int $userId = null): int {
-    $sql = "INSERT IGNORE INTO matches (user_a_id, user_b_id, shared_count, created_at)
+    $sql = "INSERT INTO matches (user_a_id, user_b_id, shared_count, created_at)
             SELECT a.user_id, b.user_id, COUNT(*), ?
             FROM swipes a
             JOIN swipes b    ON b.movie_id = a.movie_id AND b.user_id > a.user_id
@@ -32,9 +32,9 @@ function update_matches(?int $userId = null): int {
         $params[] = $userId;
     }
 
-    $sql .= " GROUP BY a.user_id, b.user_id
-              HAVING COUNT(*) >= (SELECT CAST(value AS UNSIGNED) FROM settings WHERE name = 'min_shared_movies')";
-
+        $sql .= " GROUP BY a.user_id, b.user_id
+                    HAVING COUNT(*) >= (SELECT CAST(value AS UNSIGNED) FROM settings WHERE name = 'min_shared_movies')
+                    ON DUPLICATE KEY UPDATE shared_count = VALUES(shared_count)";
     $stmt = db()->prepare($sql);
     $stmt->execute($params);
 

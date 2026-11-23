@@ -49,6 +49,15 @@ $saveSwipe->execute([
     utc_now(),
 ]);
 
+// look for new matches, but never fail the swipe if matching has a problem
+if ($decision === 'yes') {
+    try {
+        update_matches((int) $user['id']);
+    } catch (Throwable $e) {
+        error_log('MovieMatch matching error: ' . $e->getMessage());
+    }
+}
+
 json_response(200, [
     'success' => true,
     'message' => 'Your swipe has been saved.',
