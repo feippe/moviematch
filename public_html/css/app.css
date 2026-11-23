@@ -146,3 +146,30 @@ a:hover {
 .photo-preview[hidden] {
     display: none;
 }
+
+/* Contact screen */
+.contact-details {
+    background-color: #263453;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+    text-align: center;
+}
+
+.contact-details h3 {
+    color: var(--accent);
+    margin-bottom: 15px;
+}
+
+.contact-email {
+    font-size: 17px;
+    color: var(--text);
+    margin: 12px 0;
+    overflow-wrap: anywhere;
+}
+
+.contact-status {
+    color: var(--muted);
+    margin-top: 15px;
+    line-height: 1.5;
+}
