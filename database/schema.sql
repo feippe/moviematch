@@ -48,13 +48,12 @@ CREATE TABLE IF NOT EXISTS profiles (
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-
 CREATE TABLE IF NOT EXISTS matches (
     id           INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    user_a_id    INT UNSIGNED NOT NULL,   -- always the smaller user id
-    user_b_id    INT UNSIGNED NOT NULL,   -- always the bigger user id
-    shared_count INT UNSIGNED NOT NULL,   -- how many movies both said YES to
-    created_at   DATETIME     NOT NULL,
+    user_a_id    INT UNSIGNED NOT NULL,
+    user_b_id    INT UNSIGNED NOT NULL,
+    shared_count INT UNSIGNED NOT NULL,
+    created_at   DATETIME NOT NULL,
     UNIQUE KEY unique_pair (user_a_id, user_b_id),
     FOREIGN KEY (user_a_id) REFERENCES users (id) ON DELETE CASCADE,
     FOREIGN KEY (user_b_id) REFERENCES users (id) ON DELETE CASCADE
@@ -66,3 +65,41 @@ CREATE TABLE IF NOT EXISTS settings (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT IGNORE INTO settings (name, value) VALUES ('min_shared_movies', '3');
+
+CREATE TABLE IF NOT EXISTS movies (
+    id           BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    tmdb_id      INT UNSIGNED NOT NULL,
+    title        VARCHAR(255) NOT NULL,
+    overview     TEXT NULL,
+    poster_path  VARCHAR(255) NULL,
+    release_date DATE NULL,
+    popularity   DECIMAL(12, 4) NOT NULL DEFAULT 0,
+    created_at   DATETIME NOT NULL,
+    updated_at   DATETIME NOT NULL,
+    UNIQUE KEY uq_movies_tmdb_id (tmdb_id),
+    KEY idx_movies_popularity (popularity)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS swipes (
+    id        BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    user_id   INT UNSIGNED NOT NULL,
+    movie_id  BIGINT UNSIGNED NOT NULL,
+    decision  ENUM('yes', 'no') NOT NULL,
+    swiped_at DATETIME NOT NULL,
+    UNIQUE KEY uq_swipes_user_movie (user_id, movie_id),
+    KEY idx_swipes_movie_id (movie_id),
+    CONSTRAINT fk_swipes_user
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    CONSTRAINT fk_swipes_movie
+        FOREIGN KEY (movie_id) REFERENCES movies (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS match_responses (
+    match_id     INT UNSIGNED NOT NULL,
+    user_id      INT UNSIGNED NOT NULL,
+    response     ENUM('accepted', 'declined') NOT NULL,
+    responded_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (match_id, user_id),
+    FOREIGN KEY (match_id) REFERENCES matches (id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id)  REFERENCES users (id)   ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

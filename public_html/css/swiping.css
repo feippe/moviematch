@@ -1,0 +1,75 @@
+.swipe-container {
+    width: 100%;
+    max-width: 550px;
+    margin: auto;
+}
+
+.movie-card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, .3);
+}
+
+.movie-poster {
+    width: 100%;
+    max-height: 420px;
+    object-fit: contain;
+    border-radius: 10px;
+    background: #0b1020;
+    margin-bottom: 20px;
+}
+
+.movie-title {
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+.movie-date {
+    color: var(--muted);
+    margin-bottom: 15px;
+}
+
+.movie-overview {
+    line-height: 1.6;
+    color: var(--muted);
+}
+
+.swipe-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.swipe-actions button {
+    flex: 1;
+}
+
+.pass-button {
+    background: #475569;
+}
+
+.pass-button:hover {
+    background: #334155;
+}
+
+.status-message {
+    text-align: center;
+    margin: 20px 0;
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+.navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.navigation a {
+    font-size: 14px;
+}
+
+[hidden] {
+    display: none !important;
+}
