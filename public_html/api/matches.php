@@ -9,7 +9,8 @@ $userId = (int) $user['id'];
 $stmt = db()->prepare(
     "SELECT m.id, IF(m.user_a_id = ?, m.user_b_id, m.user_a_id) AS other_id,
             p.name, p.birth_date, p.sex, p.photo_path,
-            r.response AS my_response
+            r.response AS my_response,
+            (SELECT COUNT(*) FROM match_responses a WHERE a.match_id = m.id AND a.response = 'accepted') AS accepted_count
      FROM matches m
      JOIN profiles p ON p.user_id = IF(m.user_a_id = ?, m.user_b_id, m.user_a_id)
      JOIN users u    ON u.id = p.user_id AND u.blocked_at IS NULL
@@ -45,6 +46,7 @@ foreach ($rows as $row) {
         'photo_path'    => $row['photo_path'],
         'shared_movies' => $moviesStmt->fetchAll(PDO::FETCH_COLUMN),
         'my_response'   => $row['my_response'],
+        'both_accepted' => (int) $row['accepted_count'] === 2,
     ];
 }
 
