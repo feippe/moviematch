@@ -12,3 +12,4 @@ require __DIR__ . '/mail.php';
 require __DIR__ . '/auth.php';
 require __DIR__ . '/profile.php';
 require __DIR__ . '/matching.php';
+require __DIR__ . '/responses.php';
