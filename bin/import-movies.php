@@ -41,6 +41,7 @@ function fetchPopularMovies(string $apiKey, int $page): array
     ]);
 
     $curl = curl_init($url);
+
     curl_setopt_array($curl, [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_CONNECTTIMEOUT => 10,
@@ -51,6 +52,7 @@ function fetchPopularMovies(string $apiKey, int $page): array
     $body = curl_exec($curl);
     $status = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
     $error = curl_error($curl);
+
     curl_close($curl);
 
     if ($body === false) {
@@ -58,10 +60,13 @@ function fetchPopularMovies(string $apiKey, int $page): array
     }
 
     if ($status !== 200) {
-        throw new RuntimeException('TMDB returned HTTP ' . $status . ': ' . substr($body, 0, 400));
+        throw new RuntimeException(
+            'TMDB returned HTTP ' . $status . ': ' . substr($body, 0, 400)
+        );
     }
 
     $payload = json_decode($body, true);
+
     if (!is_array($payload) || !isset($payload['results']) || !is_array($payload['results'])) {
         throw new RuntimeException('TMDB returned an invalid response.');
     }
@@ -92,7 +97,9 @@ $now = gmdate('Y-m-d H:i:s');
 
 try {
     for ($page = 1; $page <= $pageCount; $page++) {
-        foreach (fetchPopularMovies((string) TMDB_API_KEY, $page) as $movie) {
+        $movies = fetchPopularMovies((string) TMDB_API_KEY, $page);
+
+        foreach ($movies as $movie) {
             $tmdbId = filter_var($movie['id'] ?? null, FILTER_VALIDATE_INT);
             $movieTitle = trim((string) ($movie['title'] ?? ''));
 
@@ -102,11 +109,13 @@ try {
             }
 
             $releaseDate = $movie['release_date'] ?? null;
+
             if (!is_string($releaseDate) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $releaseDate)) {
                 $releaseDate = null;
             }
 
             $posterPath = $movie['poster_path'] ?? null;
+
             if (!is_string($posterPath) || $posterPath === '') {
                 $posterPath = null;
             }

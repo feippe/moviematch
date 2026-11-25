@@ -1,23 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>My Matches | MovieMatch</title>
-
     <link rel="stylesheet" href="css/app.css">
     <link rel="stylesheet" href="css/matches.css">
     <script src="js/matches.js" defer></script>
 </head>
 
 <body>
-
     <main class="auth-container">
-
         <div class="auth-card">
-
             <h1>MovieMatch</h1>
+
+            <nav class="main-navigation" aria-label="Main navigation">
+                <a href="app.html">Dashboard</a>
+                <a href="swiping.html">Discover</a>
+                <a href="matches.html" aria-current="page">Matches</a>
+                <a href="profile.html">Profile</a>
+            </nav>
 
             <h2>My Matches</h2>
 
@@ -32,12 +35,10 @@
             <p id="message" role="status"></p>
 
             <p class="auth-link">
-                <a href="app.html">Back to the app</a>
+                <a href="#" id="logoutLink">Log out</a>
             </p>
-
         </div>
-
     </main>
-
 </body>
+
 </html>

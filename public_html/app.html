@@ -1,48 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>MovieMatch</title>
-
+    <title>MovieMatch | Dashboard</title>
     <link rel="stylesheet" href="css/app.css">
     <script src="js/app.js" defer></script>
 </head>
 
 <body>
-
     <main class="auth-container">
-
         <div class="auth-card">
-
             <h1>MovieMatch</h1>
+
+            <nav class="main-navigation" aria-label="Main navigation">
+                <a href="app.html" aria-current="page">Dashboard</a>
+                <a href="swiping.html">Discover</a>
+                <a href="matches.html">Matches</a>
+                <a href="profile.html">Profile</a>
+            </nav>
 
             <h2 id="welcome">Loading...</h2>
 
             <p class="subtitle">
-               Discover movies and find people who share your taste.
-             </p>
-        
-             <p class="auth-link">
-                 <a href="swiping.html">Start Discovering Movies →</a>
-              </p>
-
-            <p class="auth-link">
-                <a href="profile.html">Edit profile</a>
+                Discover movies and find people who share your taste.
             </p>
 
-            <p class="auth-link">
-                <a href="matches.html">My matches</a>
-            </p>
+            <div class="dashboard-actions">
+                <a class="action-link" href="swiping.html">Start Discovering Movies</a>
+                <a class="action-link secondary-action" href="matches.html">View My Matches</a>
+                <a class="action-link secondary-action" href="profile.html">Edit Profile</a>
+            </div>
 
             <p class="auth-link">
                 <a href="#" id="logoutLink">Log out</a>
             </p>
-
         </div>
-
     </main>
-
 </body>
+
 </html>

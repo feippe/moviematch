@@ -4,9 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discover Movies - MovieMatch</title>
+
+    <title>Discover Movies | MovieMatch</title>
+
     <link rel="stylesheet" href="css/app.css">
     <link rel="stylesheet" href="css/swiping.css">
+
     <script src="js/swiping.js" defer></script>
 </head>
 
@@ -14,45 +17,70 @@
 
     <main class="swipe-container">
 
-        <div class="navigation">
-            <a href="app.html">← Dashboard</a>
-            <a href="profile.html">Edit profile</a>
-        </div>
+        <nav class="navigation" aria-label="Main navigation">
+            <a href="app.html">Dashboard</a>
+            <a href="swiping.html" aria-current="page">Discover</a>
+            <a href="matches.html">Matches</a>
+            <a href="profile.html">Profile</a>
+        </nav>
 
-        <h1>MovieMatch</h1>
-        <h2>Discover Movies</h2>
+        <header class="swipe-header">
+            <h1>MovieMatch</h1>
 
-        <p class="subtitle">Find movies you and your future match might both love.</p>
+            <h2>Discover Movies</h2>
 
-        <section class="movie-card" id="movieCard" hidden>
+            <p class="subtitle">
+                Find movies you and your future match might both love.
+            </p>
+        </header>
+
+        <section class="movie-card" id="movieCard" aria-label="Movie to review" hidden>
 
             <img id="moviePoster" class="movie-poster" alt="Movie poster">
 
-            <h2 id="movieTitle" class="movie-title"></h2>
+            <div class="movie-information">
 
-            <p id="movieDate" class="movie-date"></p>
+                <h2 id="movieTitle" class="movie-title"></h2>
 
-            <p id="movieOverview" class="movie-overview"></p>
+                <p id="movieDate" class="movie-date"></p>
+
+                <p id="movieOverview" class="movie-overview"></p>
+
+            </div>
 
             <div class="swipe-actions">
-                <button type="button" id="passButton" class="pass-button">
-                    Pass ✕
+
+                <button type="button" id="passButton" class="pass-button" aria-label="Pass on this movie">
+                    <span aria-hidden="true">✕</span>
+                    Pass
                 </button>
 
-                <button type="button" id="likeButton">
-                    Like ♥
+                <button type="button" id="likeButton" class="like-button" aria-label="Like this movie">
+                    <span aria-hidden="true">♥</span>
+                    Like
                 </button>
+
             </div>
+
+            <p class="swipe-hint">
+                On a touchscreen, swipe left to pass or right to like.
+            </p>
 
         </section>
 
-        <p id="statusMessage" class="status-message">
+        <div id="statusMessage" class="status-message" role="status" aria-live="polite">
             Loading movies...
-        </p>
+        </div>
 
-        <p class="auth-link">
+        <div class="swipe-footer">
+
+            <button type="button" id="retryButton" class="retry-button" hidden>
+                Try Again
+            </button>
+
             <a href="#" id="logoutLink">Log out</a>
-        </p>
+
+        </div>
 
     </main>
 

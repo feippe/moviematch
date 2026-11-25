@@ -1,5 +1,3 @@
-/* MovieMatch shared styles. All screens use this file. */
-
 :root {
     --bg: #10172a;
     --card: #1c2541;
@@ -13,10 +11,10 @@
     --button-hover: #a3134b;
 }
 
-* { 
-    margin: 0; 
-    padding: 0; 
-    box-sizing: border-box; 
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body {
@@ -30,10 +28,9 @@ body {
     padding: 20px;
 }
 
-/* Centered card used by the account screens */
-.auth-container { 
-    width: 100%; 
-    max-width: 450px; 
+.auth-container {
+    width: 100%;
+    max-width: 550px;
 }
 
 .auth-card {
@@ -43,32 +40,94 @@ body {
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
-h1 { 
-    text-align: center; 
-    color: var(--accent); 
-    margin-bottom: 25px; 
-}
-h2 { 
-    text-align: center; 
-    margin-bottom: 10px; 
-}
-.subtitle { 
-    text-align: center; 
-    color: var(--muted); 
-    margin-bottom: 30px; 
-    line-height: 1.6; 
+h1 {
+    text-align: center;
+    color: var(--accent);
+    margin-bottom: 25px;
 }
 
-/* Forms */
-.form-group { 
-    margin-bottom: 20px; 
-}
-label { 
-    display: block; 
-    margin-bottom: 8px; 
+h2 {
+    text-align: center;
+    margin-bottom: 10px;
 }
 
-/* inputs and dropdowns (select) look the same */
+.subtitle {
+    text-align: center;
+    color: var(--muted);
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+.main-navigation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+}
+
+.main-navigation a {
+    color: var(--muted);
+    padding: 9px 13px;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.main-navigation a:hover {
+    background-color: #263453;
+    color: var(--text);
+    text-decoration: none;
+}
+
+.main-navigation a[aria-current="page"] {
+    background-color: var(--button);
+    color: var(--text);
+}
+
+.dashboard-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.action-link {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background-color: var(--button);
+    color: white;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+.action-link:hover {
+    background-color: var(--button-hover);
+    text-decoration: none;
+}
+
+.secondary-action {
+    background-color: #334155;
+}
+
+.secondary-action:hover {
+    background-color: #475569;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+}
+
 input,
 select {
     width: 100%;
@@ -79,17 +138,18 @@ select {
     color: #222;
     font-size: 16px;
 }
+
 input:focus,
-select:focus { 
-    outline: 2px solid var(--accent); 
-    border-color: var(--accent); 
+select:focus {
+    outline: 2px solid var(--accent);
+    border-color: var(--accent);
 }
 
-.error-message { 
-    color: var(--error); 
-    font-size: 14px; 
-    margin-bottom: 15px; 
-    min-height: 18px; 
+.error-message {
+    color: var(--error);
+    font-size: 14px;
+    margin-bottom: 15px;
+    min-height: 18px;
 }
 
 button {
@@ -103,51 +163,50 @@ button {
     font-weight: bold;
     cursor: pointer;
 }
-button:hover { 
-    background-color: var(--button-hover); 
-}
-button:disabled { 
-    opacity: 0.6; 
-    cursor: not-allowed; 
+
+button:hover {
+    background-color: var(--button-hover);
 }
 
-/* Links */
-a { 
-    color: var(--accent); 
-    text-decoration: none; 
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
-a:hover { 
-    text-decoration: underline; 
+
+a {
+    color: var(--accent);
+    text-decoration: none;
 }
-.auth-link { 
-    text-align: center; 
-    margin-top: 25px; 
-    color: var(--muted); 
+
+a:hover {
+    text-decoration: underline;
 }
-.link-right { 
-    text-align: right; 
-    margin-bottom: 20px; 
+
+.auth-link {
+    text-align: center;
+    margin-top: 25px;
+    color: var(--muted);
+}
+
+.link-right {
+    text-align: right;
+    margin-bottom: 20px;
     margin-top: 15px;
 }
 
-@media (max-width: 480px) {
-    .auth-card { padding: 30px 20px; }
-}
-
-/* the small photo on the profile screen */
 .photo-preview {
     display: block;
     width: 120px;
     height: 120px;
     object-fit: cover;
     border-radius: 50%;
-    margin: 0 auto 12px auto;
+    margin: 0 auto 12px;
 }
+
 .photo-preview[hidden] {
     display: none;
 }
 
-/* Contact screen */
 .contact-details {
     background-color: #263453;
     padding: 20px;
@@ -174,20 +233,41 @@ a:hover {
     line-height: 1.5;
 }
 
-/* messages under each field (profile screen) */
 .field-error {
     color: var(--error);
     font-size: 14px;
     margin-top: 6px;
 }
+
 .field-error:empty {
     display: none;
 }
+
 .field-hint {
     color: var(--muted);
     font-size: 13px;
     margin-top: 6px;
 }
+
 .input-error {
     border-color: var(--error);
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 12px;
+    }
+
+    .auth-card {
+        padding: 30px 20px;
+    }
+
+    .main-navigation {
+        gap: 5px;
+    }
+
+    .main-navigation a {
+        padding: 8px 9px;
+        font-size: 13px;
+    }
 }

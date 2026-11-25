@@ -1,22 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Profile | MovieMatch</title>
-
     <link rel="stylesheet" href="css/app.css">
     <script src="js/profile.js" defer></script>
 </head>
 
 <body>
-
     <main class="auth-container">
-
         <div class="auth-card">
-
             <h1>MovieMatch</h1>
+
+            <nav class="main-navigation" aria-label="Main navigation">
+                <a href="app.html">Dashboard</a>
+                <a href="swiping.html">Discover</a>
+                <a href="matches.html">Matches</a>
+                <a href="profile.html" aria-current="page">Profile</a>
+            </nav>
 
             <h2>Your Profile</h2>
 
@@ -24,39 +27,23 @@
                 Tell us about yourself so we can find your movie match.
             </p>
 
-            <!-- novalidate: our own javascript shows the messages, not the browser -->
             <form id="profileForm" novalidate>
-
                 <div class="form-group">
                     <label for="name">Name</label>
-
-                    <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        placeholder="Enter your name"
-                        maxlength="60"
-                        autocomplete="given-name"
-                    >
+                    <input type="text" id="name" name="name" placeholder="Enter your name" maxlength="60"
+                        autocomplete="given-name">
                     <p id="nameError" class="field-error"></p>
                 </div>
 
                 <div class="form-group">
                     <label for="birthDate">Date of Birth</label>
-
-                    <input
-                        type="date"
-                        id="birthDate"
-                        name="birthDate"
-                        autocomplete="bday"
-                    >
+                    <input type="date" id="birthDate" name="birthDate" autocomplete="bday">
                     <p class="field-hint">You must be at least 18 years old.</p>
                     <p id="birthDateError" class="field-error"></p>
                 </div>
 
                 <div class="form-group">
                     <label for="sex">Sex</label>
-
                     <select id="sex" name="sex">
                         <option value="">Select...</option>
                         <option value="female">Female</option>
@@ -67,7 +54,6 @@
 
                 <div class="form-group">
                     <label for="matchWith">I want to match with</label>
-
                     <select id="matchWith" name="matchWith">
                         <option value="any">No preference</option>
                         <option value="female">Female</option>
@@ -78,15 +64,8 @@
 
                 <div class="form-group">
                     <label for="photo">Photo</label>
-
-                    <img id="photoPreview" class="photo-preview" alt="Your photo" hidden>
-
-                    <input
-                        type="file"
-                        id="photo"
-                        name="photo"
-                        accept="image/jpeg,image/png,image/webp"
-                    >
+                    <img id="photoPreview" class="photo-preview" alt="Your profile photo" hidden>
+                    <input type="file" id="photo" name="photo" accept="image/jpeg,image/png,image/webp">
                     <p class="field-hint">JPG, PNG or WEBP, up to 5 MB.</p>
                     <p id="photoError" class="field-error"></p>
                 </div>
@@ -94,16 +73,13 @@
                 <p id="errorMessage" class="error-message" role="alert"></p>
 
                 <button type="submit">Save Profile</button>
-
             </form>
 
             <p class="auth-link">
-                <a href="app.html">Back to the app</a>
+                <a href="#" id="logoutLink">Log out</a>
             </p>
-
         </div>
-
     </main>
-
 </body>
+
 </html>
