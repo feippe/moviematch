@@ -29,3 +29,7 @@ Thumbs.db
 public_html/uploads/photos/*
 !public_html/uploads/photos/.gitkeep
 !public_html/uploads/photos/.htaccess
+
+# Local test files (not versioned)
+bin/test-matching.php
+database/test-matching-seed.sql

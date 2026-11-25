@@ -14,4 +14,15 @@ $result = save_profile(
     field($data, 'sex'),
     field($data, 'match_with')
 );
+
+// the profile was saved, so the preferences may have changed. we look for new matches.
+// if matching has a problem, the profile is still saved
+if ($result['status'] === 200) {
+    try {
+        update_matches((int) $user['id']);
+    } catch (Throwable $e) {
+        error_log('MovieMatch matching error: ' . $e->getMessage());
+    }
+}
+
 json_response($result['status'], $result['body']);

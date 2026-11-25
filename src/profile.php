@@ -11,6 +11,12 @@ function get_age(string $birthDate): int {
     $birth = new DateTime($birthDate);
     $today = new DateTime('today');
     $difference = $birth->diff($today);
+
+    // invert is 1 when the birth date is after today (in the future)
+    if ($difference->invert === 1) {
+        return 0;
+    }
+
     return $difference->y;
 }
 
@@ -123,20 +129,29 @@ function user_data(array $row): array {
 // saves the profile. creates it the first time, updates it after that.
 function save_profile(int $userId, string $name, string $birthDate, string $sex, string $matchWith): array {
     // check the name
-    if ($name === '' || mb_strlen($name) > MAX_NAME_LENGTH) {
-        return auth_fail(400, 'Please enter your name (up to ' . MAX_NAME_LENGTH . ' characters).');
+    if ($name === '') {
+        return auth_fail(400, 'Please enter your name.');
+    }
+    if (mb_strlen($name) > MAX_NAME_LENGTH) {
+        return auth_fail(400, 'Your name must have ' . MAX_NAME_LENGTH . ' characters or less.');
     }
 
     // check the birth date
+    if ($birthDate === '') {
+        return auth_fail(400, 'Please enter your date of birth.');
+    }
     if (!is_valid_date($birthDate)) {
         return auth_fail(400, 'Please enter a valid date of birth.');
+    }
+    if ($birthDate > gmdate('Y-m-d')) {
+        return auth_fail(400, 'Your date of birth cannot be in the future.');
     }
     $age = get_age($birthDate);
     if ($age < MIN_AGE) {
         return auth_fail(400, 'You must be at least ' . MIN_AGE . ' years old to use MovieMatch.');
     }
     if ($age > MAX_AGE) {
-        return auth_fail(400, 'Please enter a valid date of birth.');
+        return auth_fail(400, 'Please check your date of birth.');
     }
 
     // check sex and who the user wants to match with

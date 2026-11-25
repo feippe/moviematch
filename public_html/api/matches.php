@@ -8,7 +8,7 @@ $userId = (int) $user['id'];
 // matches of this user, with the profile of the other person (matches where someone already declined are hidden)
 $stmt = db()->prepare(
     "SELECT m.id, IF(m.user_a_id = ?, m.user_b_id, m.user_a_id) AS other_id,
-            p.name, p.birth_date, p.sex, p.photo_path,
+            p.name, p.birth_date, p.sex, p.photo_path, p.match_with AS other_match_with,
             r.response AS my_response,
             (SELECT COUNT(*) FROM match_responses a WHERE a.match_id = m.id AND a.response = 'accepted') AS accepted_count
      FROM matches m
@@ -37,6 +37,17 @@ $moviesStmt = db()->prepare(
 
 $matches = [];
 foreach ($rows as $row) {
+    $bothAccepted = (int) $row['accepted_count'] === 2;
+
+    // do the preferences of both people still fit? they can change them after the match was made.
+    $iAcceptThem = ($user['match_with'] === 'any' || $user['match_with'] === $row['sex']);
+    $theyAcceptMe = ($row['other_match_with'] === 'any' || $row['other_match_with'] === $user['sex']);
+
+    // hide the match if the preferences do not fit anymore, but keep it if both already accepted
+    if (!$bothAccepted && (!$iAcceptThem || !$theyAcceptMe)) {
+        continue;
+    }
+
     $moviesStmt->execute([$userId, (int) $row['other_id']]);
     $matches[] = [
         'id'            => (int) $row['id'],
@@ -46,7 +57,7 @@ foreach ($rows as $row) {
         'photo_path'    => $row['photo_path'],
         'shared_movies' => $moviesStmt->fetchAll(PDO::FETCH_COLUMN),
         'my_response'   => $row['my_response'],
-        'both_accepted' => (int) $row['accepted_count'] === 2,
+        'both_accepted' => $bothAccepted,
     ];
 }
 

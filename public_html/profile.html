@@ -24,7 +24,8 @@
                 Tell us about yourself so we can find your movie match.
             </p>
 
-            <form id="profileForm">
+            <!-- novalidate: our own javascript shows the messages, not the browser -->
+            <form id="profileForm" novalidate>
 
                 <div class="form-group">
                     <label for="name">Name</label>
@@ -36,8 +37,8 @@
                         placeholder="Enter your name"
                         maxlength="60"
                         autocomplete="given-name"
-                        required
                     >
+                    <p id="nameError" class="field-error"></p>
                 </div>
 
                 <div class="form-group">
@@ -48,28 +49,31 @@
                         id="birthDate"
                         name="birthDate"
                         autocomplete="bday"
-                        required
                     >
+                    <p class="field-hint">You must be at least 18 years old.</p>
+                    <p id="birthDateError" class="field-error"></p>
                 </div>
 
                 <div class="form-group">
                     <label for="sex">Sex</label>
 
-                    <select id="sex" name="sex" required>
+                    <select id="sex" name="sex">
                         <option value="">Select...</option>
                         <option value="female">Female</option>
                         <option value="male">Male</option>
                     </select>
+                    <p id="sexError" class="field-error"></p>
                 </div>
 
                 <div class="form-group">
                     <label for="matchWith">I want to match with</label>
 
-                    <select id="matchWith" name="matchWith" required>
+                    <select id="matchWith" name="matchWith">
                         <option value="any">No preference</option>
                         <option value="female">Female</option>
                         <option value="male">Male</option>
                     </select>
+                    <p id="matchWithError" class="field-error"></p>
                 </div>
 
                 <div class="form-group">
@@ -83,6 +87,8 @@
                         name="photo"
                         accept="image/jpeg,image/png,image/webp"
                     >
+                    <p class="field-hint">JPG, PNG or WEBP, up to 5 MB.</p>
+                    <p id="photoError" class="field-error"></p>
                 </div>
 
                 <p id="errorMessage" class="error-message" role="alert"></p>

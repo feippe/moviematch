@@ -173,3 +173,21 @@ a:hover {
     margin-top: 15px;
     line-height: 1.5;
 }
+
+/* messages under each field (profile screen) */
+.field-error {
+    color: var(--error);
+    font-size: 14px;
+    margin-top: 6px;
+}
+.field-error:empty {
+    display: none;
+}
+.field-hint {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 6px;
+}
+.input-error {
+    border-color: var(--error);
+}
