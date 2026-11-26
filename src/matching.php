@@ -33,7 +33,7 @@ function update_matches(?int $userId = null): int {
     }
 
         $sql .= " GROUP BY a.user_id, b.user_id
-                    HAVING COUNT(*) >= (SELECT CAST(value AS UNSIGNED) FROM settings WHERE name = 'min_shared_movies')
+                    HAVING COUNT(*) >= COALESCE((SELECT CAST(value AS UNSIGNED) FROM settings WHERE name = 'min_shared_movies'), 3)
                     ON DUPLICATE KEY UPDATE shared_count = VALUES(shared_count)";
     $stmt = db()->prepare($sql);
     $stmt->execute($params);
