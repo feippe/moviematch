@@ -283,3 +283,20 @@ profileForm.addEventListener("submit", async function(event) {
         submitButton.textContent = originalText;
     }
 });
+
+// log out link in the page
+const logoutButton = document.getElementById("logoutLink");
+
+if (logoutButton) {
+    logoutButton.addEventListener("click", async function(event) {
+        event.preventDefault();
+
+        try {
+            await fetch("/api/logout.php", { method: "POST" });
+        } catch (error) {
+            console.error("Logout error:", error);
+        }
+
+        window.location.href = "/login.html";
+    });
+}

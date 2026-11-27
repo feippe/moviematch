@@ -158,5 +158,22 @@ function displayMatches(matches) {
     });
 }
 
+// log out link in the page
+const logoutButton = document.getElementById("logoutLink");
+
+if (logoutButton) {
+    logoutButton.addEventListener("click", async function(event) {
+        event.preventDefault();
+
+        try {
+            await fetch("/api/logout.php", { method: "POST" });
+        } catch (error) {
+            console.error("Logout error:", error);
+        }
+
+        window.location.href = "/login.html";
+    });
+}
+
 // Load matches when the page opens
 loadMatches();
