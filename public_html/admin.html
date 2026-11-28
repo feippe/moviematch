@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieMatch - Admin Panel</title>
+    <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+    <main class="admin-container">
+        <section class="admin-card">
+
+            <h1>MovieMatch Admin Panel</h1>
+
+            <p class="subtitle">
+                Manage the minimum number of shared movies required for a match.
+            </p>
+
+            <div class="form-group">
+                <label for="threshold">
+                    Minimum Shared Movies
+                </label>
+
+                <input
+                    type="number"
+                    id="threshold"
+                    name="threshold"
+                    min="1"
+                    value="3"
+                    required
+                >
+            </div>
+
+            <button type="button" id="saveThreshold">
+                Save Changes
+            </button>
+
+            <p id="statusMessage" class="status-message"></p>
+
+            <p class="auth-link">
+                <a href="app.html">Back to Dashboard</a>
+            </p>
+
+        </section>
+    </main>
+
+</body>
+</html>

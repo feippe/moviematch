@@ -1,0 +1,42 @@
+.admin-container {
+    width: 100%;
+    max-width: 650px;
+    margin: 0 auto;
+}
+
+.admin-card {
+    background-color: var(--card);
+    padding: 40px 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.admin-card h1 {
+    color: var(--accent);
+    margin-bottom: 20px;
+}
+
+.admin-card .subtitle {
+    line-height: 1.6;
+}
+
+.admin-card input {
+    margin-top: 5px;
+}
+
+.admin-card button {
+    margin-top: 10px;
+}
+
+.status-message {
+    text-align: center;
+    margin-top: 15px;
+    color: var(--muted);
+    min-height: 20px;
+}
+
+@media (max-width: 480px) {
+    .admin-card {
+        padding: 30px 20px;
+    }
+}
